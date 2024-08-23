@@ -1,43 +1,27 @@
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const path = require('path');
+
 const app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const server = http.createServer(app);
+const io = new Server(server);
 
-app.use(express.static('public'));
-
-let users = {};
+app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', (socket) => {
-  console.log('User connected');
+    console.log('a user connected');
 
-  socket.on('join', (username) => {
-    users[username] = socket.id;
-    socket.broadcast.emit('userJoined', username);
-    socket.emit('users', Object.keys(users));
-  });
+    // Handle incoming chat messages
+    socket.on('chat message', (msg) => {
+        io.emit('chat message', msg);
+    });
 
-  socket.on('offer', (data) => {
-    console.log('Received offer');
-    socket.broadcast.emit('offer', data);
-  });
-
-  socket.on('answer', (data) => {
-    console.log('Received answer');
-    socket.broadcast.emit('answer', data);
-  });
-
-  socket.on('candidate', (data) => {
-    console.log('Received candidate');
-    socket.broadcast.emit('candidate', data);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
-    delete users[socket.username];
-    socket.broadcast.emit('userLeft', socket.username);
-  });
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
 });
 
 server.listen(3000, () => {
-  console.log('Server started on port 3000');
+    console.log('Server is running on http://localhost:3000');
 });
