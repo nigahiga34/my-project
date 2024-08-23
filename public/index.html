@@ -17,6 +17,16 @@
                 <div id="messageList" class="message-list"></div>
             </div>
             
+            <div id="callContainer" class="call-container hidden">
+                <div id="localVideoContainer" class="video-container">
+                    <video id="localVideo" autoplay muted></video>
+                </div>
+                <div id="remoteVideoContainer" class="video-container">
+                    <video id="remoteVideo" autoplay></video>
+                </div>
+                <button id="endCallButton" class="end-call-button">End Call</button>
+            </div>
+            
             <div class="input-area">
                 <div class="input-container">
                     <input type="text" id="messageInput" placeholder="Type a message...">
@@ -50,6 +60,7 @@
         </footer>
     </div>
     <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.11.1/simplepeer.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

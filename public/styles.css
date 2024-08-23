@@ -124,3 +124,57 @@ footer {
        max-width: 32rem;
    }
 }
+/* ... (previous styles remain the same) ... */
+
+.call-container {
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background-color: rgba(0, 0, 0, 0.8);
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+}
+
+.call-container.hidden {
+   display: none;
+}
+
+.video-container {
+   width: 100%;
+   max-width: 640px;
+   margin-bottom: 1rem;
+}
+
+.video-container video {
+   width: 100%;
+   height: auto;
+   border-radius: 0.5rem;
+}
+
+#localVideoContainer {
+   position: absolute;
+   width: 30%;
+   max-width: 200px;
+   top: 1rem;
+   right: 1rem;
+}
+
+.end-call-button {
+   background-color: #ef4444;
+   color: white;
+   padding: 0.5rem 1rem;
+   border: none;
+   border-radius: 0.25rem;
+   font-size: 1rem;
+   cursor: pointer;
+}
+
+.end-call-button:hover {
+   background-color: #dc2626;
+}
+
+/* ... (rest of the styles remain the same) ... */

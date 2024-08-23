@@ -8,6 +8,15 @@ const sendButton = document.getElementById('sendButton');
 const textButton = document.getElementById('textButton');
 const voiceButton = document.getElementById('voiceButton');
 const videoButton = document.getElementById('videoButton');
+const callContainer = document.getElementById('callContainer');
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
+const endCallButton = document.getElementById('endCallButton');
+
+let peer;
+let localStream;
+let remoteStream;
+let isInitiator = false;
 
 // Function to add a message to the chat
 function addMessageToChat(message, isSent) {
@@ -48,17 +57,79 @@ function setActiveButton(button) {
     button.classList.add('active');
 }
 
-textButton.addEventListener('click', () => setActiveButton(textButton));
+textButton.addEventListener('click', () => {
+    setActiveButton(textButton);
+    endCall();
+});
+
 voiceButton.addEventListener('click', () => {
     setActiveButton(voiceButton);
-    alert('Voice messaging is not implemented in this demo.');
+    startCall(false);
 });
+
 videoButton.addEventListener('click', () => {
     setActiveButton(videoButton);
-    alert('Video calling is not implemented in this demo.');
+    startCall(true);
 });
+
+endCallButton.addEventListener('click', endCall);
+
+// WebRTC functions
+async function startCall(withVideo) {
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: withVideo
+        });
+        localVideo.srcObject = localStream;
+        callContainer.classList.remove('hidden');
+        isInitiator = true;
+        createPeerConnection();
+    } catch (error) {
+        console.error('Error accessing media devices:', error);
+    }
+}
+
+function createPeerConnection() {
+    peer = new SimplePeer({
+        initiator: isInitiator,
+        stream: localStream,
+        trickle: false
+    });
+
+    peer.on('signal', data => {
+        socket.emit('signal', data);
+    });
+
+    peer.on('stream', stream => {
+        remoteVideo.srcObject = stream;
+    });
+
+    socket.on('signal', data => {
+        peer.signal(data);
+    });
+}
+
+function endCall() {
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+    }
+    if (peer) {
+        peer.destroy();
+    }
+    localVideo.srcObject = null;
+    remoteVideo.srcObject = null;
+    callContainer.classList.add('hidden');
+}
 
 // Notify when connected to the server
 socket.on('connect', () => {
     addMessageToChat('Connected to the server', false);
+});
+
+// Handle incoming calls
+socket.on('incoming call', ({ withVideo }) => {
+    if (confirm('Incoming call. Accept?')) {
+        startCall(withVideo);
+    }
 });
