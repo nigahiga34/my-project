@@ -1,31 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chat, Call, and Video App</title>
-  <link rel="stylesheet" href="styles.css" />
- </head>
- <body>
-  <div class="chat-container">
-   <div class="user-list">
-    <h2>Users</h2>
-    <ul>
-     <!-- User list will be dynamically populated -->
-    </ul>
-   </div>
-   <div class="chat-window">
-    <div class="messages">
-     <!-- Messages will be dynamically populated -->
-    </div>
-    <div class="chat-input">
-     <input type="text" id="message" placeholder="Type your message..." />
-     <button id="send-btn">Send</button>
-     <button id="call-btn">Call</button>
-     <button id="video-btn">Video</button>
-    </div>
-   </div>
-  </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice and Video Call App with Text Messaging</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Voice and Video Call App with Text Messaging</h1>
+  </header>
+  <main>
+    <section class="login">
+      <input type="text" id="username" placeholder="Enter your username">
+      <button id="join">Join</button>
+    </section>
+    <section class="chat">
+      <input type="text" id="message" placeholder="Type a message...">
+      <button id="send">Send</button>
+      <ul id="messages">
+        <!-- messages will be listed here -->
+      </ul>
+    </section>
+    <section class="call">
+      <video id="localVideo" autoplay muted></video>
+      <video id="remoteVideo" autoplay></video>
+      <button id="startCall">Start Call</button>
+      <button id="hangup">Hang Up</button>
+      <ul id="users">
+        <!-- users will be listed here -->
+      </ul>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/socket.io@2.3.0/dist/socket.io.js"></script>
   <script src="script.js"></script>
- </body>
+</body>
 </html>
