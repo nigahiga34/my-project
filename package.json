@@ -1,5 +1,5 @@
 {
-  "name": "my-project",
+  "name": "chat-app-king",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
@@ -9,10 +9,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "A simple chat app using node js",
   "dependencies": {
     "express": "^4.19.2",
     "node.js": "^0.0.1-security",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "ws": "^8.18.0"
   }
 }
