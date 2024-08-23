@@ -1,74 +1,64 @@
-const socket = io();
+// Connect to the Socket.IO server
+const socket = io('http://localhost:3001');
 
-let username;
-let localStream;
-let peerConnection;
-let remoteStream;
-let isCaller = false;
+// DOM elements
+const messageContainer = document.getElementById('messageList');
+const messageInput = document.getElementById('messageInput');
+const sendButton = document.getElementById('sendButton');
+const textButton = document.getElementById('textButton');
+const voiceButton = document.getElementById('voiceButton');
+const videoButton = document.getElementById('videoButton');
 
-document.getElementById('join').addEventListener('click', () => {
-  username = document.getElementById('username').value;
-  socket.emit('join', username);
+// Function to add a message to the chat
+function addMessageToChat(message, isSent) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message');
+    messageElement.classList.add(isSent ? 'sent' : 'received');
+    messageElement.textContent = message;
+    messageContainer.appendChild(messageElement);
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+}
+
+// Send a message
+function sendMessage() {
+    const message = messageInput.value.trim();
+    if (message) {
+        socket.emit('chat message', { text: message, sender: 'user' });
+        addMessageToChat(message, true);
+        messageInput.value = '';
+    }
+}
+
+// Event listeners
+sendButton.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
 });
 
-document.getElementById('send').addEventListener('click', () => {
-  const message = document.getElementById('message').value;
-  socket.emit('message', message);
-  document.getElementById('message').value = '';
+// Socket.IO event listeners
+socket.on('chat message', (msg) => {
+    addMessageToChat(msg.text, msg.sender === 'user');
 });
 
-document.getElementById('startCall').addEventListener('click', () => {
-  startCall();
+// Footer button functionality
+function setActiveButton(button) {
+    [textButton, voiceButton, videoButton].forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+}
+
+textButton.addEventListener('click', () => setActiveButton(textButton));
+voiceButton.addEventListener('click', () => {
+    setActiveButton(voiceButton);
+    alert('Voice messaging is not implemented in this demo.');
+});
+videoButton.addEventListener('click', () => {
+    setActiveButton(videoButton);
+    alert('Video calling is not implemented in this demo.');
 });
 
-document.getElementById('hangup').addEventListener('click', () => {
-  hangup();
+// Notify when connected to the server
+socket.on('connect', () => {
+    addMessageToChat('Connected to the server', false);
 });
-
-socket.on('users', (users) => {
-  const userList = document.getElementById('users');
-  userList.innerHTML = '';
-  users.forEach((user) => {
-    const listItem = document.createElement('li');
-    listItem.textContent = user;
-    userList.appendChild(listItem);
-  });
-});
-
-socket.on('message', (message) => {
-  const messageList = document.getElementById('messages');
-  const messageItem = document.createElement('li');
-  messageItem.textContent = message;
-  messageList.appendChild(messageItem);
-});
-
-socket.on('offer', (data) => {
-  console.log('Received offer');
-  if (!isCaller) {
-    createAnswer(data);
-  }
-});
-
-socket.on('answer', (data) => {
-  console.log('Received answer');
-  peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: data }));
-});
-
-socket.on('candidate', (data) => {
-  console.log('Received candidate');
-  peerConnection.addIceCandidate(new RTCIceCandidate(data));
-});
-
-async function startCall() {
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: true
-    });
-    document.getElementById('localVideo').srcObject = localStream;
-
-    peerConnection = new RTCPeerConnection({
-      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
-    });
-
-    localStream.get
