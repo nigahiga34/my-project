@@ -23,6 +23,7 @@ io.on('connection', (socket) => {
     }
     rooms.get(roomName).add(socket.id);
 
+    // Notify other users in the room
     socket.to(roomName).emit('user-joined', socket.id);
 
     console.log(`User ${socket.id} joined room ${roomName}`);
@@ -36,6 +37,8 @@ io.on('connection', (socket) => {
         rooms.delete(roomName);
       }
     }
+
+    // Notify other users in the room
     socket.to(roomName).emit('user-left', socket.id);
 
     console.log(`User ${socket.id} left room ${roomName}`);
